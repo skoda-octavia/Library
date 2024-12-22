@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import NavbarComponent from "../Navbar";
 
 interface Profile {
   firstName: string;
@@ -77,6 +78,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="container mt-4">
+      <div><NavbarComponent/></div>
       <h2>Edit Profile</h2>
       {loading && <p>Ładowanie...</p>}
       {error && <div className="alert alert-danger">{error}</div>}

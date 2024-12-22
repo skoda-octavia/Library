@@ -71,6 +71,7 @@ namespace Library.Controllers
                 Author = book.Author,
                 Published = book.Published,
                 Price = book.Price.ToString("0.##").Replace('.', ','),
+                Unavailable = book.Unavailable,
                 RowVersion = Convert.ToBase64String(book.RowVersion)
             });
         }
@@ -124,6 +125,7 @@ namespace Library.Controllers
             book.Publisher = bookViewModel.Publisher;
             book.Author = bookViewModel.Author;
             book.Published = bookViewModel.Published;
+            book.Unavailable = bookViewModel.Unavailable;
             book.Price = price;
 
             try
@@ -191,7 +193,7 @@ namespace Library.Controllers
             }
 
             var activeReservations = await _appDbContext.Reservations
-                .Where(r => r.Book.Id == id && r.Expires > DateTime.Now)
+                .Where(r => r.Book.Id == id && r.Expires > DateTime.Now && !r.Returned)
                 .ToListAsync();
 
             if (activeReservations.Any())

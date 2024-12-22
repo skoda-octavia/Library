@@ -120,11 +120,11 @@
                     return NotFound(new { message = "User not found" });
                 }
 
-                var rentedBooks = user.Reservations.Where(r => r.Rented).ToList();
+                var rentedBooks = user.Reservations.Where(r => r.Rented || (!r.Rented && !r.Returned && r.Expires > DateTime.Now)).ToList();
 
                 if (rentedBooks.Any())
                 {
-                    return BadRequest(new { message = "Cannot delete user, they have rented books" });
+                    return BadRequest(new { message = "Cannot delete user, they have rented or reserved books" });
                 }
 
                 _appDbContext.Users.Remove(user);

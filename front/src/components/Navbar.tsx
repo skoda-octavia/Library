@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const NavbarComponent = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -28,9 +29,40 @@ const NavbarComponent = () => {
 
     const handleDeleteAccount = () => {
         if (window.confirm("Na pewno chcesz usunąć konto?")) {
-            alert('Konto zostało usunięte');
+          axios
+            .delete(`${import.meta.env.VITE_API_URL}/account/delete`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+              },
+            })
+            .then((response) => {
+              if (response.status === 200) {
+                alert('Konto zostało pomyślnie usunięte.');
+                localStorage.removeItem('token');
+                localStorage.removeItem('role');
+                navigate('/login');
+              } else {
+                alert(`Wystąpił problem: ${response.status} ${response.statusText}`);
+              }
+            })
+            .catch((error) => {
+              if (error.response) {
+                if (error.response.status === 400) {
+                  alert('Użytkownik ma wypożyczone bądź zarezerwowane książki');
+                } else {
+                  alert(`Wystąpił błąd: ${error.response.status} ${error.response.statusText}`);
+                }
+              } else if (error.request) {
+                alert('Brak odpowiedzi od serwera. Spróbuj ponownie później.');
+              } else {
+                alert(`Wystąpił nieoczekiwany błąd: ${error.message}`);
+              }
+            })
+            .finally(() => {
+              console.log("Proces usuwania konta zakończony.");
+            });
         }
-    };
+      };
 
     return (
         <Navbar bg="light" expand="lg" className="mb-3">
